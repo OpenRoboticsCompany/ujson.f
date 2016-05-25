@@ -22,7 +22,6 @@ END-CODE
 
 FORTH
 
-
 : s8 ( a -- s8 ) c@  dup $80 and if $7f and $ffffff80 or then ;
 : u8 ( a -- u8 ) c@ ;
 : s16 ( a -- s16 ) h@ sswap ;
@@ -33,9 +32,9 @@ FORTH
 : u64 ( a -- u u ) 2@ bswap swap bswap swap ;	\ need to use unsigned representation
 : bool ( a -- b ) c@ [char] t =  ; 
 : null ( a -- 0 ) c@ [char] n = invert ;
-: s ( a -- a l ) dup w@ ; 
-: a ( a -- a l ) dup w@ ;
-: o ( a -- a l ) dup w@ ;
+: s ( a -- a l ) dup 2+ swap w@ sswap ; 
+: a ( a -- a l ) dup 2+ swap w@ sswap ;
+: o ( a -- a l ) dup 2+ swap w@ sswap ;
 
 : s8+ ( a -- a+1 s8 ) dup 1+ swap s8 ;
 : u8+ ( a -- a+1 u8 ) dup 1+ swap u8 ;
@@ -47,9 +46,9 @@ FORTH
 : u64+ ( a -- a+1 u u ) dup 8+ swap u64 ;
 : bool+ ( a -- a+l b ) dup c@ over 1+ swap ;
 : null+ ( a -- a+l 0 ) 0 ;
-: s+ ( a -- a+l a l ) dup w@ 2dup + -rot ;
-: a+ ( a -- a+l a l ) dup w@ 2dup + -rot ; 
-: o+ ( a -- a+l a l ) dup w@ 2dup + -rot ; 
+: s+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ;
+: a+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
+: o+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
 
 : tag+ if 1+ true else 0 then ;
 
@@ -69,4 +68,4 @@ FORTH
 : a? ( a -- a flag ) dup c@ [char] a = tag+ ;
 : o? ( a -- a flag ) dup c@ [char] o = tag+ ;
 
-
+create test 97 c, 0 c, 6 c, 99 c, 1 c, 99 c, 2 c, 99 c, 3 c,
