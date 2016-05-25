@@ -20,6 +20,8 @@ END-CODE
 	$CB C,(A) 
 ; immediate
 
+FORTH
+
 
 : s8 ( a -- s8 ) c@  dup $80 and if $7f and $ffffff80 or then ;
 : u8 ( a -- u8 ) c@ ;
