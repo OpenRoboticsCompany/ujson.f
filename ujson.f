@@ -3,19 +3,32 @@
 
 empty
 
+ICODE sswap ( big -- little )
+	BL BH XCHG
+	RET
+END-CODE
+
 ICODE 8+ ( n -- n+8 )
 	8 # EBX ADD
 	RET 
 END-CODE
 
+
+: bswap ( big -- little )
+	[+ASSEMBLER]
+	$0f C,(A) 
+	$CB C,(A) 
+; immediate
+
+
 : s8 ( a -- s8 ) c@  dup $80 and if $7f and $ffffff80 or then ;
 : u8 ( a -- u8 ) c@ ;
-: s16 ( a -- s16 ) h@ ;
-: u16 ( a -- u16 ) w@ ;
-: s32 ( a -- s32 ) @ ;
-: u32 ( a -- u32 ) @ ;		\ need to use unsigned representation
-: s64 ( a -- s s ) 2@ ;
-: u64 ( a -- u u ) 2@ ;		\ need to use unsigned representation
+: s16 ( a -- s16 ) h@ sswap ;
+: u16 ( a -- u16 ) w@ sswap ;
+: s32 ( a -- s32 ) @ bswap ;
+: u32 ( a -- u32 ) @ bswap ;	\ need to use unsigned representation
+: s64 ( a -- s s ) 2@ bswap swap bswap swap ;
+: u64 ( a -- u u ) 2@ bswap swap bswap swap ;	\ need to use unsigned representation
 : bool ( a -- b ) c@ [char] t =  ; 
 : null ( a -- 0 ) c@ [char] n = invert ;
 : s ( a -- a l ) dup w@ ; 
