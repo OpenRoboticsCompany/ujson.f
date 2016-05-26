@@ -68,8 +68,6 @@ FORTH
 : a? ( a -- a flag ) dup c@ [char] a = tag+ ;
 : o? ( a -- a flag ) dup c@ [char] o = tag+ ;
 
-create test 97 c, 0 c, 6 c, 99 c, 1 c, 99 c, 2 c, 99 c, 3 c,
-
 : s8, ( c -- ) [char] c c, c, ;
 : u8, ( c -- ) [char] C c, c, ;
 : s16, ( w -- ) [char] w c, sswap h, ;
@@ -78,9 +76,9 @@ create test 97 c, 0 c, 6 c, 99 c, 1 c, 99 c, 2 c, 99 c, 3 c,
 : u32, ( n -- ) [char] I c, bswap , ;
 : s64, ( n n -- ) [char] q c, bswap , bswap , ;
 : u64, ( n n -- ) [char] Q c, bswap , bswap , ;
-: s, ( a l -- ) [char] s c, dup sswap h, here swap move ;
-: a, ( a l -- ) [char] a c, dup sswap h, here swap move ; 
-: o, ( a l -- ) [char] o c, dup sswap h, here swap move ;
+: s, ( a l -- ) [char] s c, dup sswap h, here swap dup allot move ;
+: a, ( a l -- ) [char] a c, dup sswap h, here swap dup allot move ; 
+: o, ( a l -- ) [char] o c, dup sswap h, here swap dup allot move ;
 
 : a[ ( -- a ) [char] a c, here 0 h, ;
 : ]a ( a -- ) here over 2+ - sswap swap h! ;
