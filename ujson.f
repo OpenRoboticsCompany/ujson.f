@@ -3,6 +3,14 @@
 
 empty
 
+: bswap ( big -- little )
+	[+ASSEMBLER]
+	$0f C,(A) 
+	$CB C,(A) 
+; immediate
+
+FORTH
+
 ICODE sswap ( big -- little )
 	BL BH XCHG
 	RET
@@ -12,15 +20,6 @@ ICODE 8+ ( n -- n+8 )
 	8 # EBX ADD
 	RET 
 END-CODE
-
-
-: bswap ( big -- little )
-	[+ASSEMBLER]
-	$0f C,(A) 
-	$CB C,(A) 
-; immediate
-
-FORTH
 
 : s8 ( a -- s8 ) c@  dup $80 and if $7f and $ffffff80 or then ;
 : u8 ( a -- u8 ) c@ ;
@@ -50,7 +49,7 @@ FORTH
 : a+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
 : o+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
 
-: tag+ if 1+ true else 0 then ;
+: tag+ if 1+ true else false then ;
 
 : s8? ( a -- a flag ) dup c@ [char] c = tag+ ;
 : u8?  ( a -- a flag ) dup c@ [char] C = tag+ ;
@@ -85,4 +84,38 @@ FORTH
 : o[ ( -- a ) [char] o c, here 0 h, ;
 : ]o ( a -- ) here over 2+ - sswap swap h! ;
 
+: print ( a -- )
+	s8? if s8 . else
+	u8? if u8 h. else
+	s16? if s16 . else
+	u16? if u16 h. else
+	s32? if s32 . else
+	u32? if u32 h. else
+	s64? if s64 d. else
+	u64? if u64 du. else
+	s? if s type else
+	a? if a dump else
+	o? if o dump then then then then then
+	then then then then then then ;
+
+: iter
+	s8? if s8+ drop else
+	u8? if u8+ drop else
+	s16? if s16+ drop else
+	u16? if u16+ drop else
+	s32? if s32+ drop else
+	u32? if u32+ drop else
+	s64? if s64+ drop drop else
+	u64? if u64+ drop drop else
+	s? if s + else
+	a? if a + else
+	o? if o + then then then then then
+	then then then then then then ;
+
+: th ( a n -- a ) dup 0<> if 0 do iter loop else drop then ;
+
+: a> a? drop a drop ;
+: o> o? drop o drop ;
+
+create t a[ 1 s8, s" foo" s, $cafebabe u32, ]a
 
