@@ -45,9 +45,9 @@ END-CODE
 : u64+ ( a -- a+1 u u ) dup 8+ swap u64 ;
 : bool+ ( a -- a+l b ) dup c@ over 1+ swap ;
 : null+ ( a -- a+l 0 ) 0 ;
-: s+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ;
-: a+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
-: o+ ( a -- a+l a l ) dup w@ sswap 2dup + -rot ; 
+: s+ ( a -- a+l a l ) dup 2+ swap w@ sswap 2dup + -rot ;
+: a+ ( a -- a+l a l ) dup 2+ swap w@ sswap 2dup + -rot ; 
+: o+ ( a -- a+l a l ) dup 2+ swap w@ sswap 2dup + -rot ; 
 
 : tag+ if 1+ true else false then ;
 
@@ -84,7 +84,11 @@ END-CODE
 : o[ ( -- a ) [char] o c, here 0 h, ;
 : ]o ( a -- ) here over 2+ - sswap swap h! ;
 
+
+
+
 : print ( a -- )
+	dup 0= if drop ." null" else
 	s8? if s8 . else
 	u8? if u8 h. else
 	s16? if s16 . else
@@ -96,7 +100,7 @@ END-CODE
 	s? if s type else
 	a? if a dump else
 	o? if o dump then then then then then
-	then then then then then then ;
+	then then then then then then then ;
 
 : iter
 	s8? if s8+ drop else
@@ -112,10 +116,42 @@ END-CODE
 	o? if o + then then then then then
 	then then then then then then ;
 
-: th ( a n -- a ) dup 0<> if 0 do iter loop else drop then ;
+: print-array ;
+	
 
-: a> a? drop a drop ;
-: o> o? drop o drop ;
+0 value end-of-array
+: th ( a n -- a ) 
+	>R a? drop a over + to end-of-array
+	R> dup 0<> if 0 do 
+		iter dup end-of-array >= if 
+			drop false
+			leave 
+		then loop else drop then ;
+: st th ;
+: nd th ;
+: rd th ;
+
+: a> a? if a drop then ;
+: o> o? if o drop then ;
+
+0 value end-of-object
+
+: parse-key ( a l s -- a )
+	s+
+	rot >R 2over compare 0= if
+		2drop R> true
+	else
+		R> iter dup end-of-object >= dup if 
+			2drop 2drop false true
+		then
+	then ;
+
+: lookup ( a l o -- a | false ) 
+	o? drop o 
+	over + to end-of-object
+	begin parse-key until ;	
+			
+: 's ( o -- a ) >R parse-word R> lookup ;
 
 create t a[ 1 s8, s" foo" s, $cafebabe u32, ]a
 
