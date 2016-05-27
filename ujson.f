@@ -119,3 +119,8 @@ END-CODE
 
 create t a[ 1 s8, s" foo" s, $cafebabe u32, ]a
 
+create ot 111 c, 0 c, 24 c, 0 c, 3 c, 102 c, 111 c,
+	111 c, 115 c, 0 c, 3 c, 98 c, 97 c, 114 c, 
+	0 c, 4 c, 110 c, 97 c, 114 c, 102 c,
+	115 c, 0 c, 4 c, 98 c, 108 c, 97 c, 116 c,
+
